@@ -5,13 +5,15 @@ import sys
 
 from XFlash import XFlash, DeviceNotFoundError
 from XConfig import XConfig, XConfigParseError
+from XStatus import statusIsError
 
 pp = pprint.PrettyPrinter()
 
 class ConsoleUI:
-    def opStart(self, name):
+    def opStart(self, name, plural):
         self.name = name[0].upper() + name[1:]
-        sys.stdout.write(self.name.ljust(40))
+        self.plural = plural
+        sys.stdout.write(self.name + '\t')
     
     def opProgress(self,progress, total=-1):
         if (total >= 0): 
@@ -20,11 +22,19 @@ class ConsoleUI:
             prstr = "0x%04x" % (progress)
         
         sys.stdout.write(prstr.ljust(20))
-        sys.stdout.write('\x08' * 20)
+        sys.stdout.write('\b' * 20)
         sys.stdout.flush()
     
+    def opProgressErr(self, block, error):
+        sys.stdout.write('\b' * 20)
+        msg = 'Error: %X %s block %X' % (error,
+                                         self.plural,
+                                         block)
+        sys.stdout.write(msg.ljust(40) + '\n')
+        self.opStart(self.name, self.plural)
+    
     def opEnd(self, result):
-        sys.stdout.write('\x08' * 2)
+        sys.stdout.write('\b' * 2)
         sys.stdout.write(result.ljust(20))
         sys.stdout.write("\n")
 
@@ -109,7 +119,7 @@ def main(argv=None):
         except:
             xf.flashDeInit()
         start = arguments.start
-        length = arguments.length or xc.sizeblocks
+        length = arguments.length or (xc.sizeblocks - start)
         end = start + length
         
         if end > xc.sizeblocks:
@@ -124,6 +134,7 @@ def main(argv=None):
         def doOp(b):
             (status, buf) = xf.flashRead(b)
             arguments.file[0].write(buf)
+            return status
     
     if arguments.action == 'write':
         def doOp(b):
@@ -131,7 +142,7 @@ def main(argv=None):
             buf = arguments.file[0].read(blocksize)
             if len(buf) < blocksize:
                 buffer += ('\xFF' * (blocksize-len(buffer)))
-            xf.flashWrite(b, buffer)
+            return xf.flashWrite(b, buffer)
     
     if arguments.action == 'xsvf':
         vers = xf.xsvfInit()
@@ -161,11 +172,16 @@ def main(argv=None):
         xf.flashPowerOff()
     
     if arguments.action in ('read', 'write', 'erase'):
-        ui.opStart(arguments.action)
+        plural = arguments.action[:-1] + 'ing'
+        if arguments.action == 'read':
+            plural = 'reading'
+        ui.opStart(arguments.action, plural)
         try:
-            for b in xrange(start, end + 1):
-                doOp(b)
-                ui.opProgress(b, end)
+            for b in xrange(start, end):
+                status = doOp(b)
+                if statusIsError(status):
+                    ui.opProgressErr(b, status)
+                ui.opProgress(b, end-1)
             else:
                 ui.opEnd('%X OK!' % (length))
         except KeyboardInterrupt:
