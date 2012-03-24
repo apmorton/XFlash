@@ -1,17 +1,15 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '1.2'
-
 setup(name='xflash',
-      version=version,
+      version='1.3',
       description='Xbox360 USB SPI Flasher client',
       long_description='',
       classifiers=[], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
       keywords='',
       author='Juvenal',
-      author_email='',
-      url='',
+      author_email='none@of.your.biz',
+      url='https://github.com/Juvenal1228/XFlash/',
       license='BSD',
       packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
       include_package_data=True,
@@ -24,4 +22,4 @@ setup(name='xflash',
       [console_scripts]
       xflash = xflash:main
       """,
-      )
+)
