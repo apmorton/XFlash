@@ -13,6 +13,7 @@ class XConfig(object):
         self.metatype = 0
         self.blocksz = 0
         self.sizeblocks = 0
+        self.sizesmallblocks = 0
         self.fsblocks = 0
         ctype = self.controllertype
         btype = self.blocktype
@@ -57,16 +58,18 @@ class XConfig(object):
         else:
             msg = 'controller type %s is invalid' % ctype
             raise XConfigParseError(msg)
+        self.sizesmallblocks = self.sizeblocks * (self.blocksz / 0x20)
     
     def printConfig(self):
         fmt = """
-        FlashConfig:\t%x
-        PageSize:\t%x
-        MetaSize:\t%x
-        MetaType:\t%x
-        BlockSize:\t%x
-        SizeInBlocks:\t%x
-        FileBlocks:\t%x
+        FlashConfig:\t%X
+        PageSize:\t%X
+        MetaSize:\t%X
+        MetaType:\t%X
+        BlockSize:\t%X
+        SizeInBlocks:\t%X
+        SizeInSBlocks:\t%X
+        FileBlocks:\t%X
         """ % (
             self.config,
             self.pagesz,
@@ -74,6 +77,7 @@ class XConfig(object):
             self.metatype,
             self.blocksz,
             self.sizeblocks,
+            self.sizesmallblocks,
             self.fsblocks,
         )
         print fmt

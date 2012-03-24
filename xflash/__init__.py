@@ -17,9 +17,9 @@ class ConsoleUI:
     
     def opProgress(self,progress, total=-1):
         if (total >= 0): 
-            prstr = "0x%04x / 0x%04x" % (progress, total)
+            prstr = '0x%04X / 0x%04X' % (progress, total)
         else:
-            prstr = "0x%04x" % (progress)
+            prstr = '0x%04X' % (progress)
         
         sys.stdout.write(prstr.ljust(20))
         sys.stdout.write('\b' * 20)
@@ -110,7 +110,7 @@ def main(argv=None):
             vers = xf.deviceVersion()
             print 'ARM Version %s' % (vers)
             flashconfig = xf.flashInit()
-            print "FlashConfig: 0x%08x" % (flashconfig)
+            print 'FlashConfig: 0x%08X' % (flashconfig)
             xc = XConfig(flashconfig)
         except XConfigParseError as e:
             print 'Flash Config is invalid!'
@@ -119,10 +119,10 @@ def main(argv=None):
         except:
             xf.flashDeInit()
         start = arguments.start
-        length = arguments.length or (xc.sizeblocks - start)
+        length = arguments.length or (xc.sizesmallblocks - start)
         end = start + length
         
-        if end > xc.sizeblocks:
+        if end > xc.sizesmallblocks:
             print 'Error: tried to read past the nand length'
             print 'NandSize: %X\tOperationEnd: %X' % (xc.sizeblocks, end)
             sys.exit(1)
