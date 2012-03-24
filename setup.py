@@ -23,6 +23,6 @@ setup(name='xflash',
       ],
       entry_points="""
       [console_scripts]
-      xflash = xflash.XFlash:main
+      xflash = xflash:main
       """,
       )
