@@ -141,8 +141,8 @@ def main(argv=None):
             blocksize = 528 * 32
             buf = arguments.file[0].read(blocksize)
             if len(buf) < blocksize:
-                buffer += ('\xFF' * (blocksize-len(buffer)))
-            return xf.flashWrite(b, buffer)
+                buffer += ('\xFF' * (blocksize-len(buf)))
+            return xf.flashWrite(b, buf)
     
     if arguments.action == 'xsvf':
         vers = xf.xsvfInit()
