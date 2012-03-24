@@ -1,13 +1,12 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '1.1'
+version = '1.2'
 
 setup(name='xflash',
       version=version,
-      description="Xbox360 USB SPI Flasher client",
-      long_description="""\
-""",
+      description='Xbox360 USB SPI Flasher client',
+      long_description='',
       classifiers=[], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
       keywords='',
       author='Juvenal',
