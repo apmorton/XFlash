@@ -142,7 +142,6 @@ class XFlash(object):
         status = 0
         adjblock = block * self.xc.blocksperlittle
         for b in range(self.xc.blocksperlittle):
-            print b
             blk = adjblock + b
             bff = b * 0x4200
             status |= self.flashWrite(blk, buf[bff:bff+0x4200])
