@@ -3,6 +3,8 @@ import usb
 import struct
 import StringIO
 
+from xflash import XConfig
+
 class DeviceNotFoundError(Exception):
     pass
 
@@ -86,7 +88,9 @@ class XFlash(object):
         return struct.unpack('<L', buf)[0]
     
     def flashInit(self):
-        return self.__flash_status(CMD_DATA_INIT)
+        config = self.__flash_status(CMD_DATA_INIT)
+        self.xc = XConfig.XConfig(config)
+        return config
     
     def flashDeInit(self):
         self.deviceCmd(CMD_DATA_DEINIT)
@@ -96,6 +100,8 @@ class XFlash(object):
     
     def flashErase(self, block):
         self.deviceCmd(CMD_DATA_ERASE, block)
+        if self.deviceVersion() >= 3:
+            self.deviceCmd(0x7, block)
         return self.flashStatus()
     
     def flashRead(self, block):
@@ -105,13 +111,42 @@ class XFlash(object):
         status = self.flashStatus()
         return (status, buf)
     
+    def flashReadBlock(self, block):
+        """
+        Read a full block, in whatever mode the flash config
+        says is right
+        """
+        buf = ''
+        status = 0
+        adjblock = block * self.xc.blocksperlittle
+        for b in range(adjblock, adjblock+self.xc.blocksperlittle):
+            (stts, bff) = self.flashRead(b)
+            status |= stts
+            buf += bff
+        return (status, buf)
+    
     def flashWrite(self, block, buf):
-        if len(buf < 0x4200):
+        if len(buf) < 0x4200:
             raise ValueError('buffer is not long enough')
         self.deviceCmd(CMD_DATA_WRITE, block, 0x4200)
         self.dev.write(self.ep_out, buf)
+        if self.deviceVersion() >= 3:
+            self.deviceCmd(0x7, block)
         return self.flashStatus()
     
+    def flashWriteBlock(self, block, buf):
+        """
+        write a full block, in whatever mode the flash config
+        says is right
+        """
+        status = 0
+        adjblock = block * self.xc.blocksperlittle
+        for b in range(self.xc.blocksperlittle):
+            print b
+            blk = adjblock + b
+            bff = b * 0x4200
+            status |= self.flashWrite(blk, buf[bff:bff+0x4200])
+        return status
     def consolePowerOn(self):
         self.deviceCmd(CMD_XBOX_PWRON)
     

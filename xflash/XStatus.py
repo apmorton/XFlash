@@ -23,3 +23,6 @@ def statusIsError(status):
     if status & STATUS_OK == 0:
         return True
     return False
+
+def statusHasBit(status, bit):
+    return status & bit != 0

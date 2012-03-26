@@ -59,6 +59,7 @@ class XConfig(object):
             msg = 'controller type %s is invalid' % ctype
             raise XConfigParseError(msg)
         self.sizesmallblocks = self.sizeblocks * (self.blocksz / 0x20)
+        self.blocksperlittle = self.blocksz / 0x20
     
     def printConfig(self):
         fmt = """

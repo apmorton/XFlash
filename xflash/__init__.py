@@ -5,7 +5,7 @@ import sys
 
 from XFlash import XFlash, DeviceNotFoundError
 from XConfig import XConfig, XConfigParseError
-from XStatus import statusIsError
+from XStatus import *
 
 pp = pprint.PrettyPrinter()
 
@@ -141,7 +141,7 @@ def main(argv=None):
             blocksize = 528 * 32
             buf = arguments.file[0].read(blocksize)
             if len(buf) < blocksize:
-                buffer += ('\xFF' * (blocksize-len(buf)))
+                buf += ('\xFF' * (blocksize-len(buf)))
             return xf.flashWrite(b, buf)
     
     if arguments.action == 'xsvf':
@@ -182,13 +182,16 @@ def main(argv=None):
                 if statusIsError(status):
                     ui.opProgressErr(b, status)
                 ui.opProgress(b, end-1)
-            else:
-                ui.opEnd('%X OK!' % (length))
         except KeyboardInterrupt:
             ui.opEnd('INTERRUPTED!')
             path = os.path.abspath(arguments.file[0].name)
             if os.path.isfile(path):
                 os.remove(path)
+        except:
+            ui.opEnd('FAIL!')
+            raise
+        else:
+            ui.opEnd('%X OK!' % (length))
 
 if __name__ == '__main__':
     main()
