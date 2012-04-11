@@ -14,6 +14,7 @@ CMD_DATA_INIT   = 0x03
 CMD_DATA_DEINIT = 0x04
 CMD_DATA_STATUS = 0x05
 CMD_DATA_ERASE  = 0x06
+CMD_DATA_EXEC   = 0x07
 CMD_DEV_VERSION = 0x08
 CMD_XSVF_EXEC   = 0x09
 CMD_XBOX_PWRON  = 0x10
@@ -101,7 +102,7 @@ class XFlash(object):
     def flashErase(self, block):
         self.deviceCmd(CMD_DATA_ERASE, block)
         if self.deviceVersion() >= 3:
-            self.deviceCmd(0x7, block)
+            self.deviceCmd(CMD_DATA_EXEC, block)
         return self.flashStatus()
     
     def flashRead(self, block):
@@ -131,7 +132,7 @@ class XFlash(object):
         self.deviceCmd(CMD_DATA_WRITE, block, 0x4200)
         self.dev.write(self.ep_out, buf)
         if self.deviceVersion() >= 3:
-            self.deviceCmd(0x7, block)
+            self.deviceCmd(CMD_DATA_EXEC, block)
         return self.flashStatus()
     
     def flashWriteBlock(self, block, buf):
