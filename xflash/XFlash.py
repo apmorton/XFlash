@@ -33,8 +33,12 @@ class XFlash(object):
         
         if self.dev is None:
             raise DeviceNotFoundError(self.idVendor, self.idProduct)
-        
-        self.dev.set_configuration()
+
+        #for iFace in self.dev.get_active_configuration():
+        #    if self.dev.is_kernel_driver_active(iFace.index):
+        #        self.dev.detach_kernel_driver(iFace.index)
+
+        #self.dev.set_configuration()
         
         self.ep_out = 0x05
         self.ep_in  = 0x82
@@ -43,8 +47,8 @@ class XFlash(object):
         if self.dev is None:
             return
         
-        self.dev.reset()
-        self.dev.set_configuration()
+        #self.dev.reset()
+        #self.dev.set_configuration()
     
     def deviceCmd(self, cmd, argA=0, argB=0, timeout=None):
         buf = struct.pack('<LL', argA, argB)

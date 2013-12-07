@@ -4,6 +4,7 @@ class XConfigParseError(Exception):
 
 class XConfig(object):
     def __init__(self, config):
+        print '{0:x}'.format(config)
         self.config = config
         self.controllertype = config >> 17 & 3
         self.blocktype = config >> 4 & 3

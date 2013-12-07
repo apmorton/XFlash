@@ -113,6 +113,7 @@ def main(argv=None):
             print 'FlashConfig: 0x%08X' % (flashconfig)
             xc = XConfig(flashconfig)
         except XConfigParseError as e:
+            xf.flashDeInit()
             print 'Flash Config is invalid!'
             print e
             sys.exit(1)
@@ -166,10 +167,10 @@ def main(argv=None):
         xf.deviceUpdate()
     
     if arguments.action == 'poweron':
-        xf.flashPowerOn()
+        xf.consolePowerOn()
     
     if arguments.action == 'poweroff':
-        xf.flashPowerOff()
+        xf.consolePowerOff()
     
     if arguments.action in ('read', 'write', 'erase'):
         plural = arguments.action[:-1] + 'ing'
